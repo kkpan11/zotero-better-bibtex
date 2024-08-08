@@ -224,6 +224,20 @@ default: `no`
 If set, generates journal abbreviations on export using the Zotero journal abbreviator, according to the abbreviation style selected in the list below the checkbox.
 
 
+### Sort TeX/CSL output (useful if you use version control on the output):
+
+default: `item creation order (plenty fast)`
+
+BBT sorts the output for TeX and CSL exports to have the output be versioning-friendly.
+
+
+Options:
+
+* off (fastest)
+* item creation order (plenty fast)
+* citation key (slow on very large libraries)
+
+
 ### Abbreviation style:
 
 default: `<not set>`
