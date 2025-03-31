@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <meta name="generator" content="Hugo 0.142.0">
-    <meta name="generator" content="Relearn 7.3.2+7b470298046df2c96c0da9da07a54572b7c4e1b0">
+    <meta name="generator" content="Hugo 0.145.0">
+    <meta name="generator" content="Relearn 7.6.0+3bb38044a94645e9fcf0a765f0d8df64c02612e2">
     <meta name="description" content="Make Zotero more useful for us LaTeX holdouts">
     <meta name="author" content="">
     <meta name="twitter:card" content="summary">
@@ -23,43 +23,57 @@
     <link href="/zotero-better-bibtex/index.xml" rel="alternate" type="application/rss+xml" title="Better BibTeX for Zotero">
     <link href="/zotero-better-bibtex/index.print.html" rel="alternate" type="text/html" title="Better BibTeX for Zotero"><link rel="icon" href="/zotero-better-bibtex/better-bibtex.ico" type="image/x-icon">
 
-    <link href="/zotero-better-bibtex/css/fontawesome-all.min.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/css/fontawesome-all.min.css" rel="stylesheet"></noscript>
-    <link href="/zotero-better-bibtex/css/auto-complete.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/css/auto-complete.css" rel="stylesheet"></noscript>
-    <link href="/zotero-better-bibtex/css/perfect-scrollbar.min.css" rel="stylesheet">
+    <link href="/zotero-better-bibtex/fonts/fontawesome/css/fontawesome-all.min.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/fonts/fontawesome/css/fontawesome-all.min.css" rel="stylesheet"></noscript>
+    <link href="/zotero-better-bibtex/css/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet">
     <link href="/zotero-better-bibtex/css/theme.min.css" rel="stylesheet">
     <link href="/zotero-better-bibtex/css/format-html.min.css" rel="stylesheet" id="R-format-style">
+    <link href="/zotero-better-bibtex/css/auto-complete/auto-complete.min.css" rel="stylesheet">
+    <script src="/zotero-better-bibtex/js/auto-complete/auto-complete.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.stemmer.support.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.multi.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.en.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/search.min.js" defer></script>
     <script>
       window.relearn = window.relearn || {};
+      // configuration
+      window.relearn.min = `.min`;
+      window.relearn.path='\/index.html';
       window.relearn.relBasePath='.';
       window.relearn.relBaseUri='..';
       window.relearn.absBaseUri='\/zotero-better-bibtex';
-      window.relearn.min = `.min`;
+      window.relearn.contentLangs=['en'];
+      window.relearn.index_js_url="/zotero-better-bibtex/searchindex.en.js";
       window.relearn.disableAnchorCopy=false;
       window.relearn.disableAnchorScrolling=false;
+      window.relearn.disableInlineCopyToClipboard=true;
+      window.relearn.enableBlockCodeWrap=true;
+      // legal
+      window.relearn.getItem = (s,n) => {return s.getItem(n)};
+      window.relearn.setItem = (s,n,v) => {return s.setItem(n,v)};
+      window.relearn.removeItem = (s,n) => {return s.removeItem(n)};
       // variant stuff
       window.relearn.themevariants = [ 'green' ];
       window.relearn.customvariantname = "my-custom-variant";
       window.relearn.changeVariant = function(variant) {
         var oldVariant = document.documentElement.dataset.rThemeVariant;
-        window.localStorage.setItem(window.relearn.absBaseUri + "/variant", variant);
+        window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
         document.documentElement.dataset.rThemeVariant = variant;
         if (oldVariant != variant) {
           document.dispatchEvent( new CustomEvent('themeVariantLoaded', { detail: { variant, oldVariant } }) );
+          window.relearn.markVariant();
         }
       }
       window.relearn.markVariant = function() {
-        var variant = window.localStorage.getItem(window.relearn.absBaseUri + "/variant");
-        var select = document.querySelector("#R-select-variant");
-        if (select) {
-          select.value = variant;
-        }
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant");
+        document.querySelectorAll(".R-variantswitcher select").forEach((select) => {select.value = variant;});
       }
       window.relearn.initVariant = function() {
-        var variant = window.localStorage.getItem(window.relearn.absBaseUri + "/variant") ?? "";
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant") ?? "";
         if( variant == window.relearn.customvariantname ){
         }else if( !variant || !window.relearn.themevariants.includes(variant) ){
           variant = window.relearn.themevariants[0];
-          window.localStorage.setItem(window.relearn.absBaseUri + "/variant", variant);
+          window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
         }
         document.documentElement.dataset.rThemeVariant = variant;
       }
@@ -96,7 +110,7 @@
 
 
   </head>
-  <body class="mobile-support html disableInlineCopyToClipboard" data-url="/zotero-better-bibtex/index.html">
+  <body class="mobile-support html" data-url="/zotero-better-bibtex/index.html">
     <div id="R-body" class="default-animation">
       <div id="R-body-overlay"></div>
       <nav id="R-topbar">
@@ -126,13 +140,13 @@
               </div>
             </div>
           </div>
-          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
-            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Better BibTeX for Zotero</span><meta itemprop="position" content="1"></li>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList">
+            <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><span itemprop="name">Better BibTeX for Zotero</span><meta itemprop="position" content="1"></li>
           </ol>
           <div class="topbar-area topbar-area-end" data-area="end">
-            <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/retorquere/zotero-better-bibtex/edit/master/site/content/_index.md" target="_blank" title="Edit (CTRL&#43;ALT&#43;w)"><i class="fa-fw fas fa-pen"></i></a>
+            <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/retorquere/zotero-better-bibtex/edit/master/site/content/_index.md" rel="external" target="_blank" title="Edit (CTRL+ALT+w)"><i class="fa-fw fas fa-pen"></i></a>
             </div>
-            <div class="topbar-button topbar-button-print" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/zotero-better-bibtex/index.print.html" title="Print whole chapter (CTRL&#43;ALT&#43;p)"><i class="fa-fw fas fa-print"></i></a>
+            <div class="topbar-button topbar-button-print" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/zotero-better-bibtex/index.print.html" title="Print whole chapter (CTRL+ALT+p)"><i class="fa-fw fas fa-print"></i></a>
             </div>
             <div class="topbar-button topbar-button-prev" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><span class="topbar-control"><i class="fa-fw fas fa-chevron-left"></i></span>
             </div>
@@ -834,9 +848,6 @@ Better BibTeX for Zotero
 </a>
 
         </div>
-        <script>
-          window.index_js_url="/zotero-better-bibtex/searchindex.en.js";
-        </script>
         <search><form action="/zotero-better-bibtex/search/index.html" method="get">
           <div class="searchbox default-animation">
             <button class="search-detail" type="submit" title="Search (CTRL+ALT+f)"><i class="fas fa-search"></i></button>
@@ -845,24 +856,29 @@ Better BibTeX for Zotero
             <button class="search-clear" type="button" data-search-clear="" title="Clear search"><i class="fas fa-times" title="Clear search"></i></button>
           </div>
         </form></search>
-        <script>
-          var contentLangs=['en'];
-        </script>
-        <script src="/zotero-better-bibtex/js/auto-complete.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.stemmer.support.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.multi.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.en.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/search.js" defer></script>
       </div>
       <div id="R-homelinks" class="default-animation homelinks">
-        <ul>
-          <li><a class="padding" href="/zotero-better-bibtex/index.html"><i class="fa-fw fas fa-home"></i> Home</a></li>
-        </ul>
-        <hr class="padding">
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-homelinks">
+          <ul class="space collapsible-menu">
+            <li class="active " data-nav-id="/zotero-better-bibtex/index.html"><a class="padding" href="/zotero-better-bibtex/index.html"><i class="fa-fw fas fa-home"></i> Home</a></li>
+          </ul>
+        </div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-controls">
+          <ul class="">
+          </ul>
+        </div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
       </div>
       <div id="R-content-wrapper" class="highlightable">
-        <div id="R-shortcutmenu-home" class="R-sidebarmenu">
+        <div class="R-sidebarmenu R-shortcutmenu-home">
           <ul class="enlarge morespace collapsible-menu">
             <li class="" data-nav-id="/zotero-better-bibtex/installation/index.html"><a class="padding" href="/zotero-better-bibtex/installation/index.html">Installation</a><ul id="R-subsections-ff749ccaab053548f690f97bcd6daed0" class="collapsible-menu"></ul></li>
             <li class="" data-nav-id="/zotero-better-bibtex/exporting/index.html"><a class="padding" href="/zotero-better-bibtex/exporting/index.html">Exporting</a><ul id="R-subsections-1d584ca98d27013df6242b6c17171d5e" class="collapsible-menu"></ul></li>
@@ -871,59 +887,23 @@ Better BibTeX for Zotero
             <li class="" data-nav-id="/zotero-better-bibtex/sponsoring/index.html"><a class="padding" href="/zotero-better-bibtex/sponsoring/index.html">Sponsoring BBT</a></li>
           </ul>
         </div>
-        <div id="R-shortcutmenu-shortcuts" class="R-sidebarmenu">
+        <div class="R-sidebarmenu R-shortcutmenu-shortcuts">
           <div class="nav-title padding">More</div>
           <ul class="space collapsible-menu">
-            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex/releases/latest"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex/releases/latest" target="_blank"><i class='fas fa-fw fa-download'></i> Download</a></li>
+            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex/releases/latest"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex/releases/latest" rel="external" target="_blank"><i class='fas fa-fw fa-download'></i> Download</a></li>
             <li class="" data-nav-id="/zotero-better-bibtex/sponsoring"><a class="padding" href="/zotero-better-bibtex/sponsoring"><i class='fas fa-fw fa-heart'></i> Sponsorship</a></li>
-            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex" target="_blank"><i class='fab fa-fw fa-github'></i> GitHub repo</a></li>
+            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex" rel="external" target="_blank"><i class='fab fa-fw fa-github'></i> GitHub repo</a></li>
           </ul>
         </div>
-        <div class="padding footermargin footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showFooter"></div>
-        <div id="R-menu-footer">
-          <hr class="padding default-animation footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showFooter">
-          <div id="R-prefooter" class="footerLangSwitch footerVariantSwitch footerVisitedLinks">
-            <ul>
-              <li id="R-select-language-container" class="footerLangSwitch">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-language"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <label class="a11y-only" for="R-select-language">Language</label>
-                    <select id="R-select-language" onchange="location = this.querySelector( this.value ).dataset.url;">
-                      <option id="R-select-language-en" value="#R-select-language-en" data-url="/zotero-better-bibtex/index.html" lang="en" selected>English</option>
-                    </select>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-              </li>
-              <li id="R-select-variant-container" class="footerVariantSwitch">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-paint-brush"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <label class="a11y-only" for="R-select-variant">Theme</label>
-                    <select id="R-select-variant" onchange="window.relearn.changeVariant( this.value );">
-                      <option id="R-select-variant-green" value="green" selected>Green</option>
-                    </select>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <script>window.relearn.markVariant();</script>
-              </li>
-              <li class="footerVisitedLinks">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-history"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <button onclick="clearHistory();">Clear History</button>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div id="R-footer" class="footerFooter showFooter">
+        <div id="R-footer-margin"></div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-controls">
+          <ul class="">
+          </ul>
+        </div>
+<div id="R-footer">
     
     
     
@@ -1053,13 +1033,11 @@ Better BibTeX for Zotero
 </center>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-
-          </div>
-        </div>
+</div>
       </div>
     </aside>
-    <script src="/zotero-better-bibtex/js/clipboard.min.js" defer></script>
-    <script src="/zotero-better-bibtex/js/perfect-scrollbar.min.js" defer></script>
-    <script src="/zotero-better-bibtex/js/theme.js" defer></script>
+    <script src="/zotero-better-bibtex/js/clipboard/clipboard.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/perfect-scrollbar/perfect-scrollbar.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/theme.min.js" defer></script>
   </body>
 </html>

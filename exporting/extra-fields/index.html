@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <meta name="generator" content="Hugo 0.142.0">
-    <meta name="generator" content="Relearn 7.3.2+7b470298046df2c96c0da9da07a54572b7c4e1b0">
+    <meta name="generator" content="Hugo 0.145.0">
+    <meta name="generator" content="Relearn 7.6.0+3bb38044a94645e9fcf0a765f0d8df64c02612e2">
     <meta name="description" content="In some cases the Zotero fields do not offer a place to enter the data you need to get your exported entries just right. For this Zotero has a so-called “cheater syntax” which allows you to add extra “fields” as separate lines in the extra field all items in Zotero have. These fields are supported by the citation processor inside Zotero, and BBT understands them too, and adds one “cheater syntax of its own.">
     <meta name="author" content="">
     <meta name="twitter:card" content="summary">
@@ -22,43 +22,57 @@
     <meta itemprop="wordCount" content="1073">
     <title>Extra fields :: Better BibTeX for Zotero</title><link rel="icon" href="/zotero-better-bibtex/better-bibtex.ico" type="image/x-icon">
 
-    <link href="/zotero-better-bibtex/css/fontawesome-all.min.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/css/fontawesome-all.min.css" rel="stylesheet"></noscript>
-    <link href="/zotero-better-bibtex/css/auto-complete.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/css/auto-complete.css" rel="stylesheet"></noscript>
-    <link href="/zotero-better-bibtex/css/perfect-scrollbar.min.css" rel="stylesheet">
+    <link href="/zotero-better-bibtex/fonts/fontawesome/css/fontawesome-all.min.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/fonts/fontawesome/css/fontawesome-all.min.css" rel="stylesheet"></noscript>
+    <link href="/zotero-better-bibtex/css/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet">
     <link href="/zotero-better-bibtex/css/theme.min.css" rel="stylesheet">
     <link href="/zotero-better-bibtex/css/format-html.min.css" rel="stylesheet" id="R-format-style">
+    <link href="/zotero-better-bibtex/css/auto-complete/auto-complete.min.css" rel="stylesheet">
+    <script src="/zotero-better-bibtex/js/auto-complete/auto-complete.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.stemmer.support.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.multi.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.en.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/search.min.js" defer></script>
     <script>
       window.relearn = window.relearn || {};
+      // configuration
+      window.relearn.min = `.min`;
+      window.relearn.path='\/exporting\/extra-fields\/index.html';
       window.relearn.relBasePath='..\/..';
       window.relearn.relBaseUri='..\/..\/..';
       window.relearn.absBaseUri='\/zotero-better-bibtex';
-      window.relearn.min = `.min`;
+      window.relearn.contentLangs=['en'];
+      window.relearn.index_js_url="/zotero-better-bibtex/searchindex.en.js";
       window.relearn.disableAnchorCopy=false;
       window.relearn.disableAnchorScrolling=false;
+      window.relearn.disableInlineCopyToClipboard=true;
+      window.relearn.enableBlockCodeWrap=true;
+      // legal
+      window.relearn.getItem = (s,n) => {return s.getItem(n)};
+      window.relearn.setItem = (s,n,v) => {return s.setItem(n,v)};
+      window.relearn.removeItem = (s,n) => {return s.removeItem(n)};
       // variant stuff
       window.relearn.themevariants = [ 'green' ];
       window.relearn.customvariantname = "my-custom-variant";
       window.relearn.changeVariant = function(variant) {
         var oldVariant = document.documentElement.dataset.rThemeVariant;
-        window.localStorage.setItem(window.relearn.absBaseUri + "/variant", variant);
+        window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
         document.documentElement.dataset.rThemeVariant = variant;
         if (oldVariant != variant) {
           document.dispatchEvent( new CustomEvent('themeVariantLoaded', { detail: { variant, oldVariant } }) );
+          window.relearn.markVariant();
         }
       }
       window.relearn.markVariant = function() {
-        var variant = window.localStorage.getItem(window.relearn.absBaseUri + "/variant");
-        var select = document.querySelector("#R-select-variant");
-        if (select) {
-          select.value = variant;
-        }
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant");
+        document.querySelectorAll(".R-variantswitcher select").forEach((select) => {select.value = variant;});
       }
       window.relearn.initVariant = function() {
-        var variant = window.localStorage.getItem(window.relearn.absBaseUri + "/variant") ?? "";
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant") ?? "";
         if( variant == window.relearn.customvariantname ){
         }else if( !variant || !window.relearn.themevariants.includes(variant) ){
           variant = window.relearn.themevariants[0];
-          window.localStorage.setItem(window.relearn.absBaseUri + "/variant", variant);
+          window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
         }
         document.documentElement.dataset.rThemeVariant = variant;
       }
@@ -97,7 +111,7 @@
 
 
   </head>
-  <body class="mobile-support html disableInlineCopyToClipboard" data-url="/zotero-better-bibtex/exporting/extra-fields/index.html">
+  <body class="mobile-support html" data-url="/zotero-better-bibtex/exporting/extra-fields/index.html">
     <div id="R-body" class="default-animation">
       <div id="R-body-overlay"></div>
       <nav id="R-topbar">
@@ -119,13 +133,13 @@
               </div>
             </div>
           </div>
-          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
-            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="/zotero-better-bibtex/index.html"><span itemprop="name">Better BibTeX for Zotero</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
-            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="/zotero-better-bibtex/exporting/index.html"><span itemprop="name">Exporting</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
-            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Extra fields</span><meta itemprop="position" content="3"></li>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList">
+            <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><a itemprop="item" href="/zotero-better-bibtex/index.html"><span itemprop="name">Better BibTeX for Zotero</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li>
+            <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><a itemprop="item" href="/zotero-better-bibtex/exporting/index.html"><span itemprop="name">Exporting</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li>
+            <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><span itemprop="name">Extra fields</span><meta itemprop="position" content="3"></li>
           </ol>
           <div class="topbar-area topbar-area-end" data-area="end">
-            <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/retorquere/zotero-better-bibtex/edit/master/site/content/exporting/extra-fields.md" target="_blank" title="Edit (CTRL&#43;ALT&#43;w)"><i class="fa-fw fas fa-pen"></i></a>
+            <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/retorquere/zotero-better-bibtex/edit/master/site/content/exporting/extra-fields.md" rel="external" target="_blank" title="Edit (CTRL+ALT+w)"><i class="fa-fw fas fa-pen"></i></a>
             </div>
             <div class="topbar-button topbar-button-prev" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/zotero-better-bibtex/exporting/scripting/index.html" title="Scripting (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
             </div>
@@ -159,9 +173,9 @@ have. These fields are supported by the citation processor inside
 Zotero, and BBT understands them too, and adds one &ldquo;cheater syntax
 of its own.</p>
 <p>You can add such fields by adding each on their own line in the following format:</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Label: value</span></span></code></pre></div>
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Label: value</span></span></code></pre></div>
 <p>or the older format you migh have seen, which is supported but considered depracated:</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>{:csl-variable: value}</span></span></code></pre></div>
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>{:csl-variable: value}</span></span></code></pre></div>
 <p>The full list of labels and the Zotero/CSL variables they translate to can be found in the table at the end.</p>
 <p>These extra-fields are available to <a href="/zotero-better-bibtex/exporting/scripting/">postscripts</a> as <code>extra.kv.&lt;variable-name&gt;</code>. Which variable it is depends (sorry):</p>
 <ul>
@@ -177,20 +191,20 @@ of its own.</p>
 <p>Text is just that. For dates, BBT will do its darndest to parse the crazy dates so many people seem intent in using but if you want consistent results, stick to <code>YYYY-MM-DD</code>. For names, use either just text (equivalent to a single-part name in Zotero), or <code>&lt;family name&gt; || &lt;given name&gt;</code>.</p>
 <h2 id="bbt-specific">BBT-specific</h2>
 <p>There is also a BBT-specific extra-field format that looks like</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>tex.field: value</span></span></code></pre></div>
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>tex.field: value</span></span></code></pre></div>
 <p>These fields are simply copied to the output by BBT, so if you have</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>tex.bestfield: philosophy</span></span></code></pre></div>
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>tex.bestfield: philosophy</span></span></code></pre></div>
 <p>you will end up with</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bibtex" data-lang="bibtex"><span style="display:flex;"><span>  <span style="color:#75715e">bestfield = {philosophy}</span></span></span></code></pre></div>
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bibtex" data-lang="bibtex"><span style="display:flex;"><span>  <span style="color:#75715e">bestfield = {philosophy}</span></span></span></code></pre></div>
 <p>in the written bib(la)tex.</p>
 <p>You can make BBT export the field only for bibtex or biblatex by changing the prefix to <code>bibtex.</code> (so <code>bibtex.bestfield:</code>) or <code>biblatex.</code> respectively. Finally, you can use <code>=</code> instead of <code>:</code> as a delimiter, and that will indicate to BBT that what follows the <code>=</code> is &ldquo;raw LaTeX&rdquo;; BBT will not do any escaping and just copy it out unchanged. This means, for example, that you would probably want</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>tex.corp: Black &amp; Decker
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>tex.corp: Black &amp; Decker
 </span></span><span style="display:flex;"><span>tex.formula= $\sum\limits_{i=1}^{n} -p(m_{i})\log_{2}(p(m_{i}))$</span></span></code></pre></div>
 <p>and not</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>tex.corp= Black &amp; Decker
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>tex.corp= Black &amp; Decker
 </span></span><span style="display:flex;"><span>tex.formula: $\sum\limits_{i=1}^{n} -p(m_{i})\log_{2}(p(m_{i}))$</span></span></code></pre></div>
 <p>BBT will apply case-protection rules for non-raw fields by including capitals in the prefix, eg</p>
-<div class="highlight wrap-code"><pre tabindex="0"><code>TeX.corp: Black &amp; Decker</code></pre></div>
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0"><code>TeX.corp: Black &amp; Decker</code></pre></div>
 <p>It is important to note that these BBT-specific fields are not recognized by any other exporter. They might end up in notes for some other exporters; there&rsquo;s nothing I can do about that.</p>
 <h2 id="labelvariable-list">Label/variable list</h2>
 <p><em>note</em>: I list the Zotero fields here, not the bibtex fields. The Zotero fields are translated to bibtex fields but that translation is pretty complicated and I don&rsquo;t have a simple description of it at this time.</p>
@@ -1571,9 +1585,6 @@ Better BibTeX for Zotero
 </a>
 
         </div>
-        <script>
-          window.index_js_url="/zotero-better-bibtex/searchindex.en.js";
-        </script>
         <search><form action="/zotero-better-bibtex/search/index.html" method="get">
           <div class="searchbox default-animation">
             <button class="search-detail" type="submit" title="Search (CTRL+ALT+f)"><i class="fas fa-search"></i></button>
@@ -1582,24 +1593,29 @@ Better BibTeX for Zotero
             <button class="search-clear" type="button" data-search-clear="" title="Clear search"><i class="fas fa-times" title="Clear search"></i></button>
           </div>
         </form></search>
-        <script>
-          var contentLangs=['en'];
-        </script>
-        <script src="/zotero-better-bibtex/js/auto-complete.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.stemmer.support.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.multi.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.en.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/search.js" defer></script>
       </div>
       <div id="R-homelinks" class="default-animation homelinks">
-        <ul>
-          <li><a class="padding" href="/zotero-better-bibtex/index.html"><i class="fa-fw fas fa-home"></i> Home</a></li>
-        </ul>
-        <hr class="padding">
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-homelinks">
+          <ul class="space collapsible-menu">
+            <li class="" data-nav-id="/zotero-better-bibtex/index.html"><a class="padding" href="/zotero-better-bibtex/index.html"><i class="fa-fw fas fa-home"></i> Home</a></li>
+          </ul>
+        </div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-controls">
+          <ul class="">
+          </ul>
+        </div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
       </div>
       <div id="R-content-wrapper" class="highlightable">
-        <div id="R-shortcutmenu-home" class="R-sidebarmenu">
+        <div class="R-sidebarmenu R-shortcutmenu-home">
           <ul class="enlarge morespace collapsible-menu">
             <li class="" data-nav-id="/zotero-better-bibtex/installation/index.html"><a class="padding" href="/zotero-better-bibtex/installation/index.html">Installation</a><ul id="R-subsections-ff749ccaab053548f690f97bcd6daed0" class="collapsible-menu"></ul></li>
             <li class="parent " data-nav-id="/zotero-better-bibtex/exporting/index.html"><a class="padding" href="/zotero-better-bibtex/exporting/index.html">Exporting</a><ul id="R-subsections-1d584ca98d27013df6242b6c17171d5e" class="collapsible-menu">
@@ -1616,59 +1632,23 @@ Better BibTeX for Zotero
             <li class="" data-nav-id="/zotero-better-bibtex/sponsoring/index.html"><a class="padding" href="/zotero-better-bibtex/sponsoring/index.html">Sponsoring BBT</a></li>
           </ul>
         </div>
-        <div id="R-shortcutmenu-shortcuts" class="R-sidebarmenu">
+        <div class="R-sidebarmenu R-shortcutmenu-shortcuts">
           <div class="nav-title padding">More</div>
           <ul class="space collapsible-menu">
-            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex/releases/latest"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex/releases/latest" target="_blank"><i class='fas fa-fw fa-download'></i> Download</a></li>
+            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex/releases/latest"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex/releases/latest" rel="external" target="_blank"><i class='fas fa-fw fa-download'></i> Download</a></li>
             <li class="" data-nav-id="/zotero-better-bibtex/sponsoring"><a class="padding" href="/zotero-better-bibtex/sponsoring"><i class='fas fa-fw fa-heart'></i> Sponsorship</a></li>
-            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex" target="_blank"><i class='fab fa-fw fa-github'></i> GitHub repo</a></li>
+            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex" rel="external" target="_blank"><i class='fab fa-fw fa-github'></i> GitHub repo</a></li>
           </ul>
         </div>
-        <div class="padding footermargin footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showFooter"></div>
-        <div id="R-menu-footer">
-          <hr class="padding default-animation footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showFooter">
-          <div id="R-prefooter" class="footerLangSwitch footerVariantSwitch footerVisitedLinks">
-            <ul>
-              <li id="R-select-language-container" class="footerLangSwitch">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-language"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <label class="a11y-only" for="R-select-language">Language</label>
-                    <select id="R-select-language" onchange="location = this.querySelector( this.value ).dataset.url;">
-                      <option id="R-select-language-en" value="#R-select-language-en" data-url="/zotero-better-bibtex/exporting/extra-fields/index.html" lang="en" selected>English</option>
-                    </select>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-              </li>
-              <li id="R-select-variant-container" class="footerVariantSwitch">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-paint-brush"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <label class="a11y-only" for="R-select-variant">Theme</label>
-                    <select id="R-select-variant" onchange="window.relearn.changeVariant( this.value );">
-                      <option id="R-select-variant-green" value="green" selected>Green</option>
-                    </select>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <script>window.relearn.markVariant();</script>
-              </li>
-              <li class="footerVisitedLinks">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-history"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <button onclick="clearHistory();">Clear History</button>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div id="R-footer" class="footerFooter showFooter">
+        <div id="R-footer-margin"></div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-controls">
+          <ul class="">
+          </ul>
+        </div>
+<div id="R-footer">
     
     
     
@@ -1798,13 +1778,11 @@ Better BibTeX for Zotero
 </center>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-
-          </div>
-        </div>
+</div>
       </div>
     </aside>
-    <script src="/zotero-better-bibtex/js/clipboard.min.js" defer></script>
-    <script src="/zotero-better-bibtex/js/perfect-scrollbar.min.js" defer></script>
-    <script src="/zotero-better-bibtex/js/theme.js" defer></script>
+    <script src="/zotero-better-bibtex/js/clipboard/clipboard.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/perfect-scrollbar/perfect-scrollbar.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/theme.min.js" defer></script>
   </body>
 </html>

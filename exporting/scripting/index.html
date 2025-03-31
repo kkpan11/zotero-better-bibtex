@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <meta name="generator" content="Hugo 0.142.0">
-    <meta name="generator" content="Relearn 7.3.2+7b470298046df2c96c0da9da07a54572b7c4e1b0">
+    <meta name="generator" content="Hugo 0.145.0">
+    <meta name="generator" content="Relearn 7.6.0+3bb38044a94645e9fcf0a765f0d8df64c02612e2">
     <meta name="description" content="You wanted customized… You got customized. If you go into the Export tab of the Better BibTeX preferences, subtab postscript, you will find a text box (empty by default) where you can edit a javascript snippet which will be executed for each entry generated in the Bib(La)TeX exporter. In this code, you have access to the entry just before it will be written out and cached. There is an API to do this, and it’s fairly stable, but usually you can just open a new issue and ask me to write it, and I’ll add it here (it’s how the examples got here). Postscripts are available in 4 of the translators:">
     <meta name="author" content="">
     <meta name="twitter:card" content="summary">
@@ -24,43 +24,57 @@
     <meta itemprop="keywords" content="Scripting">
     <title>Scripting :: Better BibTeX for Zotero</title><link rel="icon" href="/zotero-better-bibtex/better-bibtex.ico" type="image/x-icon">
 
-    <link href="/zotero-better-bibtex/css/fontawesome-all.min.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/css/fontawesome-all.min.css" rel="stylesheet"></noscript>
-    <link href="/zotero-better-bibtex/css/auto-complete.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/css/auto-complete.css" rel="stylesheet"></noscript>
-    <link href="/zotero-better-bibtex/css/perfect-scrollbar.min.css" rel="stylesheet">
+    <link href="/zotero-better-bibtex/fonts/fontawesome/css/fontawesome-all.min.css" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/zotero-better-bibtex/fonts/fontawesome/css/fontawesome-all.min.css" rel="stylesheet"></noscript>
+    <link href="/zotero-better-bibtex/css/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet">
     <link href="/zotero-better-bibtex/css/theme.min.css" rel="stylesheet">
     <link href="/zotero-better-bibtex/css/format-html.min.css" rel="stylesheet" id="R-format-style">
+    <link href="/zotero-better-bibtex/css/auto-complete/auto-complete.min.css" rel="stylesheet">
+    <script src="/zotero-better-bibtex/js/auto-complete/auto-complete.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.stemmer.support.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.multi.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/lunr/lunr.en.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/search.min.js" defer></script>
     <script>
       window.relearn = window.relearn || {};
+      // configuration
+      window.relearn.min = `.min`;
+      window.relearn.path='\/exporting\/scripting\/index.html';
       window.relearn.relBasePath='..\/..';
       window.relearn.relBaseUri='..\/..\/..';
       window.relearn.absBaseUri='\/zotero-better-bibtex';
-      window.relearn.min = `.min`;
+      window.relearn.contentLangs=['en'];
+      window.relearn.index_js_url="/zotero-better-bibtex/searchindex.en.js";
       window.relearn.disableAnchorCopy=false;
       window.relearn.disableAnchorScrolling=false;
+      window.relearn.disableInlineCopyToClipboard=true;
+      window.relearn.enableBlockCodeWrap=true;
+      // legal
+      window.relearn.getItem = (s,n) => {return s.getItem(n)};
+      window.relearn.setItem = (s,n,v) => {return s.setItem(n,v)};
+      window.relearn.removeItem = (s,n) => {return s.removeItem(n)};
       // variant stuff
       window.relearn.themevariants = [ 'green' ];
       window.relearn.customvariantname = "my-custom-variant";
       window.relearn.changeVariant = function(variant) {
         var oldVariant = document.documentElement.dataset.rThemeVariant;
-        window.localStorage.setItem(window.relearn.absBaseUri + "/variant", variant);
+        window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
         document.documentElement.dataset.rThemeVariant = variant;
         if (oldVariant != variant) {
           document.dispatchEvent( new CustomEvent('themeVariantLoaded', { detail: { variant, oldVariant } }) );
+          window.relearn.markVariant();
         }
       }
       window.relearn.markVariant = function() {
-        var variant = window.localStorage.getItem(window.relearn.absBaseUri + "/variant");
-        var select = document.querySelector("#R-select-variant");
-        if (select) {
-          select.value = variant;
-        }
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant");
+        document.querySelectorAll(".R-variantswitcher select").forEach((select) => {select.value = variant;});
       }
       window.relearn.initVariant = function() {
-        var variant = window.localStorage.getItem(window.relearn.absBaseUri + "/variant") ?? "";
+        var variant = window.relearn.getItem(window.localStorage, window.relearn.absBaseUri + "/variant") ?? "";
         if( variant == window.relearn.customvariantname ){
         }else if( !variant || !window.relearn.themevariants.includes(variant) ){
           variant = window.relearn.themevariants[0];
-          window.localStorage.setItem(window.relearn.absBaseUri + "/variant", variant);
+          window.relearn.setItem(window.localStorage, window.relearn.absBaseUri + "/variant", variant);
         }
         document.documentElement.dataset.rThemeVariant = variant;
       }
@@ -97,7 +111,7 @@
 
 
   </head>
-  <body class="mobile-support html disableInlineCopyToClipboard" data-url="/zotero-better-bibtex/exporting/scripting/index.html">
+  <body class="mobile-support html" data-url="/zotero-better-bibtex/exporting/scripting/index.html">
     <div id="R-body" class="default-animation">
       <div id="R-body-overlay"></div>
       <nav id="R-topbar">
@@ -144,13 +158,13 @@
               </div>
             </div>
           </div>
-          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
-            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="/zotero-better-bibtex/index.html"><span itemprop="name">Better BibTeX for Zotero</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
-            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="/zotero-better-bibtex/exporting/index.html"><span itemprop="name">Exporting</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
-            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Scripting</span><meta itemprop="position" content="3"></li>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList">
+            <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><a itemprop="item" href="/zotero-better-bibtex/index.html"><span itemprop="name">Better BibTeX for Zotero</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li>
+            <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><a itemprop="item" href="/zotero-better-bibtex/exporting/index.html"><span itemprop="name">Exporting</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li>
+            <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement" class=""><span itemprop="name">Scripting</span><meta itemprop="position" content="3"></li>
           </ol>
           <div class="topbar-area topbar-area-end" data-area="end">
-            <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/retorquere/zotero-better-bibtex/edit/master/site/content/exporting/scripting.md" target="_blank" title="Edit (CTRL&#43;ALT&#43;w)"><i class="fa-fw fas fa-pen"></i></a>
+            <div class="topbar-button topbar-button-edit" data-content-empty="disable" data-width-s="area-more" data-width-m="show" data-width-l="show"><a class="topbar-control" href="https://github.com/retorquere/zotero-better-bibtex/edit/master/site/content/exporting/scripting.md" rel="external" target="_blank" title="Edit (CTRL+ALT+w)"><i class="fa-fw fas fa-pen"></i></a>
             </div>
             <div class="topbar-button topbar-button-prev" data-content-empty="disable" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="/zotero-better-bibtex/exporting/pull/index.html" title="Pull export (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
             </div>
@@ -195,11 +209,11 @@ here (it&rsquo;s how the examples got here). Postscripts are available in 4 of t
 </ol>
 <p>You can (and totally should) check in which translator your postscript is running, which you can do by testing for
 <code>Translator.&lt;id&gt;</code> where <code>&lt;id&gt;</code> is one of these four names, using something like</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
 </span></span><span style="display:flex;"><span>  ...
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <p>or alternately on the full name using a switch</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">header</span>.<span style="color:#a6e22e">label</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">header</span>.<span style="color:#a6e22e">label</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;Better BibLaTeX&#39;</span><span style="color:#f92672">:</span>
 </span></span><span style="display:flex;"><span>    ...
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">break</span>;
@@ -864,7 +878,7 @@ the Zotero item looks like to the translator.</p>
 <h2 id="samples">Samples</h2>
 <h3 id="add-accessdate-url-for-bibtex">Add accessdate, url for BibTeX</h3>
 <p>Since BibTeX doesn&rsquo;t really have well-defined behavior across styles the way BibLaTeX does, BBT can&rsquo;t generate URL data which is compatible with all BibTeX styles. If you know the style you use yourself, you can add the data in the format you want using a postscript. The script below will add a note for the last accessed date, and a <code>\url</code> tag within the <code>howpublished</code> field, but only for BibTeX, not for BibLaTeX, and only for <code>webpage</code> entries:</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">itemType</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;webpage&#39;</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">itemType</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;webpage&#39;</span>) {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">accessDate</span>) {
 </span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;note&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;(accessed &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">accessDate</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/\s*T?\d+:\d+:\d+.*/</span>, <span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;)&#34;</span> });
 </span></span><span style="display:flex;"><span>    }
@@ -874,12 +888,12 @@ the Zotero item looks like to the translator.</p>
 </span></span><span style="display:flex;"><span>  }</span></span></code></pre></div>
 <h3 id="commas-in-keywords">Comma&rsquo;s in keywords</h3>
 <p>If you want to retain commas in your keywords (e.g. for chemical elements) and separate with a comma-space, you could do:</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;keywords&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">tags</span>, <span style="color:#a6e22e">sep</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;, &#39;</span>, <span style="color:#a6e22e">enc</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;tags&#39;</span> });
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <p>as the default encoder knows what to do with arrays, if you give it a separator.</p>
 <h3 id="add-doi-in-note-field">Add DOI in note field</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">DOI</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">DOI</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">doi</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">DOI</span>;
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">doi</span>.<span style="color:#a6e22e">indexOf</span>(<span style="color:#e6db74">&#39;doi:&#39;</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) { <span style="color:#a6e22e">doi</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;doi:&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">doi</span>; }
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;note&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;[&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">doi</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;]&#39;</span> });
@@ -887,13 +901,13 @@ the Zotero item looks like to the translator.</p>
 <h3 id="add-arxiv-data">Add arXiv data</h3>
 <p>arXiv is a bit of an odd duck. It really isn&rsquo;t a journal, so it shouldn&rsquo;t be the journal title, and their own recommendations on how to include arXiv IDs is a little lacking: <a href="https://arxiv.org/help/faq/references" rel="external" target="_blank">this</a> doesn&rsquo;t say where to include the <code>arXiv:...</code> identfier, and <a href="https://arxiv.org/help/hypertex/bibstyles" rel="external" target="_blank">this</a> says <em>not</em> to include it. Nor does it give any recommendations on how to achieve the <a href="https://arxiv.org/help/faq/references" rel="external" target="_blank">desired output</a>.</p>
 <p>But for arguments&rsquo; sake, let&rsquo;s say you get the desired output by including an empty <code>journaltitle</code> field (ugh) and stuff the <code>arXiv:...</code> ID in the <code>pages</code> field (<em>ugh</em>). You could do that with the following postscript:</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">arXiv</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">arXiv</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;pages&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">arXiv</span>.<span style="color:#a6e22e">id</span> });
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">journaltitle</span>) { <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;journaltitle&#39;</span>, <span style="color:#a6e22e">bibtex</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{}&#39;</span> }); }
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="custom-field-order">Custom field order</h3>
 <p>Specify the ordering of the listing of fields in an exported Biblatex/Bibtex entry. Your postscript:</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// the bib(la)tex fields are ordered according to this array.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// If a field is not in this list, it will show up after the ordered fields.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// https://github.com/retorquere/zotero-better-bibtex/issues/512
@@ -924,19 +938,19 @@ the Zotero item looks like to the translator.</p>
 </code></pre>
 <p>Further details <a href="https://github.com/retorquere/zotero-better-bibtex/issues/512" rel="external" target="_blank">Export to Biblatex/Bibtex. Custom field order. #512</a>.</p>
 <h3 id="case-protect-italicized-text">Case-protect italicized text</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">title</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">title</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;title&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">title</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/(&lt;i&gt;)/ig</span>, <span style="color:#e6db74">&#39;&lt;span class=&#34;nocase&#34;&gt;$1&#39;</span>).<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/(&lt;[/]i&gt;)/ig</span>, <span style="color:#e6db74">&#39;$1&lt;/span&gt;&#39;</span>))
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="detect-and-protect-latex-math-formulas">Detect and protect LaTeX math formulas</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">title</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">title</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;title&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">title</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/(\$.*?\$)/g</span>, <span style="color:#e6db74">&#39;&lt;script&gt;{$1}&lt;/script&gt;&#39;</span>) });
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="or-detect-and-protect-simple-latex-commands">Or, detect and protect (simple) LaTeX commands</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">journal</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">journal</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;journal&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">journal</span>.<span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/(\\\w+)/g</span>, <span style="color:#e6db74">&#39;&lt;script&gt;{$1}&lt;/script&gt;&#39;</span>) });
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="detect-and-protect-mathjax">Detect and protect MathJax</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// different for bibtex and biblatex exporters
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">note</span> <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;annotation&#39;</span>, <span style="color:#e6db74">&#39;note&#39;</span>].<span style="color:#a6e22e">find</span>(<span style="color:#a6e22e">field</span> =&gt; <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>[<span style="color:#a6e22e">field</span>])
 </span></span><span style="display:flex;"><span>
@@ -951,7 +965,7 @@ the Zotero item looks like to the translator.</p>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="replace-director-with-author-for-videorecording-and-film-entries">Replace <code>director</code> with <code>author</code> for <code>videoRecording</code> and <code>film</code> entries</h3>
 <p>Creator handling is fairly complicated, so to change the authors/editors/creators of any kind, you must change them on <code>zotero</code> and then call <code>addCreators</code> to do the needful. <code>addCreators</code> will <em>replace</em> the existing creators that were added to <code>tex</code> with the current state in <code>zotero.creators</code>, however you left it.</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">itemType</span>) {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;videoRecording&#39;</span><span style="color:#f92672">:</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;film&#39;</span><span style="color:#f92672">:</span>
@@ -963,11 +977,11 @@ the Zotero item looks like to the translator.</p>
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="changing-the-entry-type-from-collection-to-book">Changing the entry type from collection to book</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">entrytype</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;collection&#39;</span>) <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">entrytype</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;book&#39;</span>
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="set-the-entry-type-to-misc-for-arxiv-preprints-in-bibtex">Set the entry type to <code>misc</code> for arXiv preprints in BibTeX</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">entrytype</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;article&#39;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">arXiv</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">entrytype</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;article&#39;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">arXiv</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">has</span>.<span style="color:#a6e22e">journal</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">arXiv</span>.<span style="color:#a6e22e">source</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;publicationTitle&#39;</span>) {
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">remove</span>(<span style="color:#e6db74">&#39;journal&#39;</span>);
 </span></span><span style="display:flex;"><span>  }
@@ -993,7 +1007,7 @@ physical archive.)</p>
 location to postscripts for now. If you enable the <a href="/zotero-better-bibtex/installation/preferences/export/#include-comments-about-potential-problems-with-the-references">quality report</a>, BBT
 will list Zotero fields with data that has not been used in the
 export:</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bibtex" data-lang="bibtex"><span style="display:flex;"><span><span style="color:#a6e22e">@letter</span>{MillionDemiInfirmes1968,
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bibtex" data-lang="bibtex"><span style="display:flex;"><span><span style="color:#a6e22e">@letter</span>{MillionDemiInfirmes1968,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">title</span> = <span style="color:#e6db74">{Un Million et Demi d&#39;infirmes, Handicapés Physiques et Mentaux}</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">date</span> = <span style="color:#e6db74">{1968-05-31}</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">url</span> = <span style="color:#e6db74">{https://archives.strasbourg.eu/archive/fonds/FRAM67482_0592_114Z/view:115037}</span>,
@@ -1007,7 +1021,7 @@ export:</p>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">% ? Unused archiveLocation: 114 Z 1 248</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">% ? Unused callNumber: 114 Z 1 248</span></span></span></code></pre></div>
 <p>if you then apply a postscript such as</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// biblatex-mla
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">archive</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">archiveLocation</span>) {
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;type&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">entrytype</span> })
@@ -1017,7 +1031,7 @@ export:</p>
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <p>you get</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bibtex" data-lang="bibtex"><span style="display:flex;"><span><span style="color:#a6e22e">@unpublished</span>{MillionDemiInfirmes1968,
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bibtex" data-lang="bibtex"><span style="display:flex;"><span><span style="color:#a6e22e">@unpublished</span>{MillionDemiInfirmes1968,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">title</span> = <span style="color:#e6db74">{Un Million et Demi d&#39;infirmes, Handicapés Physiques et Mentaux}</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">date</span> = <span style="color:#e6db74">{1968-05-31}</span>,
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">url</span> = <span style="color:#e6db74">{https://archives.strasbourg.eu/archive/fonds/FRAM67482_0592_114Z/view:115037}</span>,
@@ -1030,16 +1044,16 @@ export:</p>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">% Unexpected field &#39;number&#39;</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">% Missing required field &#39;author&#39;</span></span></span></code></pre></div>
 <h3 id="export-season-for-bibtex">Export season for BibTeX</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">date</span>.<span style="color:#a6e22e">type</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;season&#39;</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">date</span>.<span style="color:#a6e22e">type</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;season&#39;</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;month&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;spring&#39;</span>, <span style="color:#e6db74">&#39;summer&#39;</span>, <span style="color:#e6db74">&#39;fall&#39;</span>, <span style="color:#e6db74">&#39;winter&#39;</span>][<span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">date</span>.<span style="color:#a6e22e">season</span>] })
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="adding-rights-field-in-biblatex">Adding rights field in BibLaTeX</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterBibLaTeX</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tex</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;rights&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">rights</span>});
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="use--in-file-paths-to-avoid-the-bib-file-being-different-on-different-computers">Use <code>~</code> in file paths to avoid the .bib file being different on different computers</h3>
 <p>For example on a Linux machine you might have <code>/home/myname</code> and on MacOS it is typically <code>/Users/mypossiblyothername</code>. If you sync a bib file on both to a git repo you will see a lot of diffs everytime due to them fighting each other.</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">exportFileData</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">attachments</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">attachments</span>.<span style="color:#a6e22e">length</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">exportFileData</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">attachments</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">attachments</span>.<span style="color:#a6e22e">length</span>) {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">att</span> <span style="color:#66d9ef">of</span> <span style="color:#a6e22e">zotero</span>.<span style="color:#a6e22e">attachments</span>) {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">att</span>.<span style="color:#a6e22e">localPath</span>) {
 </span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">att</span>.<span style="color:#a6e22e">localPath</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">att</span>.<span style="color:#a6e22e">localPath</span>.<span style="color:#a6e22e">replace</span>(RegExp(<span style="color:#e6db74">&#34;^\/.*?\/.*?\/&#34;</span>), <span style="color:#e6db74">&#34;~/&#34;</span>)
@@ -1051,11 +1065,11 @@ export:</p>
 <p>From <a href="https://forums.zotero.org/discussion/comment/399187#Comment_399187" rel="external" target="_blank">discussion here</a>.</p>
 <h3 id="adding-file-field-for-csl-json-export">Adding file field for CSL JSON export</h3>
 <p>It can be useful to have paths to attachment files included in json files, which is currently not the case, see <a href="https://github.com/retorquere/zotero-better-bibtex/issues/518" rel="external" target="_blank">issue 518</a>.</p>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterCSLJSON</span>) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterCSLJSON</span>) {
 </span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">entry</span>.<span style="color:#a6e22e">file</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">attachments</span>.<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">a</span> =&gt; <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">localPath</span>).<span style="color:#a6e22e">join</span>(<span style="color:#e6db74">&#34;;&#34;</span>);
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div>
 <h3 id="convert-windows-attachment-paths-to-unix">Convert Windows attachment paths to Unix</h3>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">exportFileData</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">attachments</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">exportPath</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#39;\\\\&#39;</span>)) {
+<div class="highlight wrap-code" dir="auto"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">BetterTeX</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">exportFileData</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">attachments</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">Translator</span>.<span style="color:#a6e22e">exportPath</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#39;\\\\&#39;</span>)) {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">attachments</span>) {
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">reference</span>.<span style="color:#a6e22e">add</span>({ <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;file&#39;</span>, <span style="color:#a6e22e">bibtex</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">reference</span>.<span style="color:#a6e22e">enc_attachments</span>({ <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">attachments</span> }, <span style="color:#a6e22e">path</span> =&gt; <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/^[A-Z]:/i</span>, <span style="color:#e6db74">&#39;&#39;</span>).<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/\\\\/g</span>, <span style="color:#e6db74">&#39;/&#39;</span>)) })
 </span></span><span style="display:flex;"><span>  }
@@ -1682,9 +1696,6 @@ Better BibTeX for Zotero
 </a>
 
         </div>
-        <script>
-          window.index_js_url="/zotero-better-bibtex/searchindex.en.js";
-        </script>
         <search><form action="/zotero-better-bibtex/search/index.html" method="get">
           <div class="searchbox default-animation">
             <button class="search-detail" type="submit" title="Search (CTRL+ALT+f)"><i class="fas fa-search"></i></button>
@@ -1693,24 +1704,29 @@ Better BibTeX for Zotero
             <button class="search-clear" type="button" data-search-clear="" title="Clear search"><i class="fas fa-times" title="Clear search"></i></button>
           </div>
         </form></search>
-        <script>
-          var contentLangs=['en'];
-        </script>
-        <script src="/zotero-better-bibtex/js/auto-complete.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.stemmer.support.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.multi.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/lunr/lunr.en.min.js" defer></script>
-        <script src="/zotero-better-bibtex/js/search.js" defer></script>
       </div>
       <div id="R-homelinks" class="default-animation homelinks">
-        <ul>
-          <li><a class="padding" href="/zotero-better-bibtex/index.html"><i class="fa-fw fas fa-home"></i> Home</a></li>
-        </ul>
-        <hr class="padding">
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-homelinks">
+          <ul class="space collapsible-menu">
+            <li class="" data-nav-id="/zotero-better-bibtex/index.html"><a class="padding" href="/zotero-better-bibtex/index.html"><i class="fa-fw fas fa-home"></i> Home</a></li>
+          </ul>
+        </div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-controls">
+          <ul class="">
+          </ul>
+        </div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
       </div>
       <div id="R-content-wrapper" class="highlightable">
-        <div id="R-shortcutmenu-home" class="R-sidebarmenu">
+        <div class="R-sidebarmenu R-shortcutmenu-home">
           <ul class="enlarge morespace collapsible-menu">
             <li class="" data-nav-id="/zotero-better-bibtex/installation/index.html"><a class="padding" href="/zotero-better-bibtex/installation/index.html">Installation</a><ul id="R-subsections-ff749ccaab053548f690f97bcd6daed0" class="collapsible-menu"></ul></li>
             <li class="parent " data-nav-id="/zotero-better-bibtex/exporting/index.html"><a class="padding" href="/zotero-better-bibtex/exporting/index.html">Exporting</a><ul id="R-subsections-1d584ca98d27013df6242b6c17171d5e" class="collapsible-menu">
@@ -1727,59 +1743,23 @@ Better BibTeX for Zotero
             <li class="" data-nav-id="/zotero-better-bibtex/sponsoring/index.html"><a class="padding" href="/zotero-better-bibtex/sponsoring/index.html">Sponsoring BBT</a></li>
           </ul>
         </div>
-        <div id="R-shortcutmenu-shortcuts" class="R-sidebarmenu">
+        <div class="R-sidebarmenu R-shortcutmenu-shortcuts">
           <div class="nav-title padding">More</div>
           <ul class="space collapsible-menu">
-            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex/releases/latest"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex/releases/latest" target="_blank"><i class='fas fa-fw fa-download'></i> Download</a></li>
+            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex/releases/latest"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex/releases/latest" rel="external" target="_blank"><i class='fas fa-fw fa-download'></i> Download</a></li>
             <li class="" data-nav-id="/zotero-better-bibtex/sponsoring"><a class="padding" href="/zotero-better-bibtex/sponsoring"><i class='fas fa-fw fa-heart'></i> Sponsorship</a></li>
-            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex" target="_blank"><i class='fab fa-fw fa-github'></i> GitHub repo</a></li>
+            <li class="" data-nav-id="https://github.com/retorquere/zotero-better-bibtex"><a class="padding" href="https://github.com/retorquere/zotero-better-bibtex" rel="external" target="_blank"><i class='fab fa-fw fa-github'></i> GitHub repo</a></li>
           </ul>
         </div>
-        <div class="padding footermargin footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showFooter"></div>
-        <div id="R-menu-footer">
-          <hr class="padding default-animation footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showFooter">
-          <div id="R-prefooter" class="footerLangSwitch footerVariantSwitch footerVisitedLinks">
-            <ul>
-              <li id="R-select-language-container" class="footerLangSwitch">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-language"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <label class="a11y-only" for="R-select-language">Language</label>
-                    <select id="R-select-language" onchange="location = this.querySelector( this.value ).dataset.url;">
-                      <option id="R-select-language-en" value="#R-select-language-en" data-url="/zotero-better-bibtex/exporting/scripting/index.html" lang="en" selected>English</option>
-                    </select>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-              </li>
-              <li id="R-select-variant-container" class="footerVariantSwitch">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-paint-brush"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <label class="a11y-only" for="R-select-variant">Theme</label>
-                    <select id="R-select-variant" onchange="window.relearn.changeVariant( this.value );">
-                      <option id="R-select-variant-green" value="green" selected>Green</option>
-                    </select>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <script>window.relearn.markVariant();</script>
-              </li>
-              <li class="footerVisitedLinks">
-                <div class="padding menu-control">
-                  <i class="fa-fw fas fa-history"></i>
-                  <span>&nbsp;</span>
-                  <div class="control-style">
-                    <button onclick="clearHistory();">Clear History</button>
-                  </div>
-                  <div class="clear"></div>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div id="R-footer" class="footerFooter showFooter">
+        <div id="R-footer-margin"></div>
+        <div class="R-menu-divider default-animation">
+          <hr class="padding">
+        </div>
+        <div class="R-sidebarmenu R-shortcutmenu-controls">
+          <ul class="">
+          </ul>
+        </div>
+<div id="R-footer">
     
     
     
@@ -1909,13 +1889,11 @@ Better BibTeX for Zotero
 </center>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-
-          </div>
-        </div>
+</div>
       </div>
     </aside>
-    <script src="/zotero-better-bibtex/js/clipboard.min.js" defer></script>
-    <script src="/zotero-better-bibtex/js/perfect-scrollbar.min.js" defer></script>
-    <script src="/zotero-better-bibtex/js/theme.js" defer></script>
+    <script src="/zotero-better-bibtex/js/clipboard/clipboard.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/perfect-scrollbar/perfect-scrollbar.min.js" defer></script>
+    <script src="/zotero-better-bibtex/js/theme.min.js" defer></script>
   </body>
 </html>
